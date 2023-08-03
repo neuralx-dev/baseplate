@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 
 import environ
@@ -60,12 +61,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
 CORS_ORIGIN_WHITELIST = [
-  'http://localhost:5173',
+    'http://localhost:5173',
 ]
-
-
 
 ROOT_URLCONF = "baseplate.urls"
 
@@ -168,6 +166,7 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 # Default primary key field type
