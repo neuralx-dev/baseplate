@@ -92,7 +92,7 @@ def upload_tool(request):
         name=data['name'],
         about=data['about'],
         desc=data['desc'],
-        banner=uploaded_file_url,
+        banner='images/banners/' + banner_file.name,
         logo='',
         link=data['link'],
         tags=data['tags']
