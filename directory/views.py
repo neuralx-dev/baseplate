@@ -1,5 +1,6 @@
 import base64
 import os
+import random
 import time
 
 from django.core.files.base import ContentFile
@@ -19,7 +20,17 @@ from .serializers import ToolSerializer
 
 @api_view(['GET'])
 def tools_for_home(request):
-    return Response(ToolSerializer(Tool.objects.all().order_by('?')[:20], many=True).data, status=status.HTTP_200_OK)
+    tags = Tool.objects.values_list('tags', flat=True)
+    # join the list of tags with a '-' character
+    tags_string = ','.join(tags)
+    tags = list(set(tags_string.split(',')))[:15]
+    random.shuffle(tags)
+
+    return Response({
+        'tools': ToolSerializer(Tool.objects.all().order_by('?')[:20], many=True).data,
+        'tags': tags,
+        'count': len(Tool.objects.all())
+    }, status=status.HTTP_200_OK)
 
 
 class ToolListCreateView(generics.ListCreateAPIView):
@@ -40,7 +51,8 @@ def search_tools(request):
     query = request.query_params.get('term', '')
     print()
     # filter out the tools that have the query in either name, about or tags
-    tools = Tool.objects.filter(Q(name__contains=query) | Q(name__contains=query) | Q(name__contains=query))
+    tools = Tool.objects.filter(
+        Q(name__contains=query) | Q(desc__contains=query) | Q(tags__contains=query) | Q(about__contains=query))
     # serialize the tools
     tool_serializer = ToolSerializer(tools, many=True)
     # return a response with the serialized data and a status code of 200 (OK)
@@ -52,8 +64,9 @@ def all_tags(request):
     tags = Tool.objects.values_list('tags', flat=True)
     # join the list of tags with a '-' character
     tags_string = ','.join(tags)
-
-    return Response(list(set(tags_string.split(','))), status=status.HTTP_200_OK)
+    tags = list(set(tags_string.split(',')))[:25]
+    random.shuffle(tags)
+    return Response(tags, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
