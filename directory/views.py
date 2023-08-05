@@ -85,7 +85,7 @@ def upload_tool(request):
 
     # logo_file = request.FILES.get('logo')
     banner_file = request.FILES.get('banner')
-    fs = FileSystemStorage(location='images/banner/')
+    fs = FileSystemStorage(location='media/images/banner/')
     filename = fs.save(banner_file.name, banner_file)
     uploaded_file_url = fs.url(filename)
     tool = Tool(
