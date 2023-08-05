@@ -3,6 +3,7 @@ import os
 import time
 
 from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.shortcuts import render
 from rest_framework import status
@@ -59,40 +60,46 @@ def all_tags(request):
 def upload_tool(request):
     # get the json data from the request body
     data = request.data
+    print(data)
+    print(request.FILES)
     # validate the data
-    if not data['name'] or not data['about'] or not data['desc'] or not data['banner'] or not data[
-        'link'] or not data['tags']:
-        return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # decode the base64 encoded files
-    #logo_data = request.data['logo']
-    banner_data = request.data['banner']
+    # # decode the base64 encoded files
+    # #logo_data = request.data['logo']
+    # banner_data = request.data['banner']
+    #
+    # #format_logo, imgstr_logo = logo_data.split(';base64,')
+    # format_banner, imgstr_banner = banner_data.split(';base64,')
+    # #ext_logo = format_logo.split('/')[-1]
+    # ext_banner = format_banner.split('/')[-1]
+    # #data_logo = ContentFile(base64.b64decode(imgstr_logo))
+    # data_banner = ContentFile(base64.b64decode(imgstr_banner))
+    #
+    # #file_name_logo = f'{int(time.time())}.' + ext_logo
+    # file_name_banner = f'{int(time.time())}.' + ext_banner
+    # # request.user.avatar.save(file_name, data, save=True)
+    #
+    # # create a new tool object with the data and the file paths
 
-    #format_logo, imgstr_logo = logo_data.split(';base64,')
-    format_banner, imgstr_banner = banner_data.split(';base64,')
-    #ext_logo = format_logo.split('/')[-1]
-    ext_banner = format_banner.split('/')[-1]
-    #data_logo = ContentFile(base64.b64decode(imgstr_logo))
-    data_banner = ContentFile(base64.b64decode(imgstr_banner))
+    # save the tool object to the database
 
-    #file_name_logo = f'{int(time.time())}.' + ext_logo
-    file_name_banner = f'{int(time.time())}.' + ext_banner
-    # request.user.avatar.save(file_name, data, save=True)
-
-    # create a new tool object with the data and the file paths
+    # logo_file = request.FILES.get('logo')
+    banner_file = request.FILES.get('banner')
+    fs = FileSystemStorage(location='images/banner/')
+    filename = fs.save(banner_file.name, banner_file)
+    uploaded_file_url = fs.url(filename)
     tool = Tool(
         name=data['name'],
         about=data['about'],
         desc=data['desc'],
-        banner='',
+        banner=uploaded_file_url,
         logo='',
         link=data['link'],
         tags=data['tags']
     )
-
-    # save the tool object to the database
     tool.save()
-    #tool.logo.save(file_name_logo, data_logo, save=True)
-    tool.banner.save(file_name_banner, data_banner, save=True)
+
+    # tool.logo.save(file_name_logo, data_logo, save=True)
+    # tool.banner.save(file_name_banner, data_banner, save=True)
     # return a success response with the tool id
     return Response(ToolSerializer(tool, many=False).data, status=status.HTTP_201_CREATED)
