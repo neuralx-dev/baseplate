@@ -4,13 +4,9 @@ from authentication.models import User
 
 
 class UserSerializerData(ModelSerializer):
-    symbol_name = ReadOnlyField()
-    level = ReadOnlyField()
-    is_valid_to_moderate = ReadOnlyField()
-
     class Meta:
         model = User
-        fields = ['id', 'email', 'symbol_name', 'role', 'level', 'is_valid_to_moderate', 'block_priority','question_categories']
+        fields = ['id', 'email', 'role']
 
 
 class UserSerializerProfile(ModelSerializer):

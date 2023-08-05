@@ -27,11 +27,14 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = [
     env('HOST')
 ]
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 AUTH_USER_MODEL = "authentication.User"
 CORS_ALLOW_CREDENTIALS = True
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'authentication',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'directory'
 ]
