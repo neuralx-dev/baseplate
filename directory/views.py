@@ -8,9 +8,10 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Tool
+from .models import Tool, ToolLike
 from .serializers import ToolSerializer
 # Create your views here.
 from rest_framework import generics
@@ -53,6 +54,7 @@ def search_tools(request):
     # filter out the tools that have the query in either name, about or tags
     tools = Tool.objects.filter(
         Q(name__contains=query) | Q(desc__contains=query) | Q(tags__contains=query) | Q(about__contains=query))
+    print(len(tools))
     # serialize the tools
     tool_serializer = ToolSerializer(tools, many=True)
     # return a response with the serialized data and a status code of 200 (OK)
@@ -116,3 +118,38 @@ def upload_tool(request):
     # tool.banner.save(file_name_banner, data_banner, save=True)
     # return a success response with the tool id
     return Response(ToolSerializer(tool, many=False).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_tool(request,tool_id):
+    # get the tool id and the user id from the request data
+    print(request.data)
+
+    user_id = request.user.id
+
+
+
+    # validate the tool id
+    if not tool_id:
+        return Response({'error': 'Missing tool id'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # check if the tool exists
+    try:
+        tool = Tool.objects.get(id=tool_id)
+    except Tool.DoesNotExist:
+        return Response({'error': 'Tool not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # check if the user has already liked the tool
+    if ToolLike.objects.filter(tool=tool, user=user_id).exists():
+        ToolLike.objects.filter(tool=tool, user=user_id).first().delete()
+        return Response({'error': 'like deleted'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    # create a new tool like object with the tool and the user ids
+    tool_like = ToolLike(tool=tool, user_id=user_id)
+
+    # save the tool like object to the database
+    tool_like.save()
+
+    # return a success response with the tool like id
+    return Response({'id': tool_like.id}, status=status.HTTP_201_CREATED)

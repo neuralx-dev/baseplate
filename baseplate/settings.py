@@ -25,13 +25,13 @@ environ.Env.read_env()
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-brd+6_1k#ds$)cx2xf0i2t_d9jfdfgzp-lx8&u46w0&%x9sxgq')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = [
-    env('HOST')
+    os.getenv('HOST', 'baseplate.iran.liara.run')
 ]
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -68,7 +68,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:5173',
+    'http://localhost:5173', 'http://127.0.0.1:3000', 'https://toolbot.iran.liara.run'
 ]
 
 ROOT_URLCONF = "baseplate.urls"
@@ -108,25 +108,25 @@ WSGI_APPLICATION = "baseplate.wsgi.application"
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=env('DATABASE_URL'),
+        default=os.getenv('DATABASE_URL', ''),
         conn_max_age=600
     ),
-    "postgres": {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT'),
-    },
-    'mysql': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT')
-    }
+    # "postgresql-url": {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': env('DATABASE_NAME'),
+    #     'USER': env('DATABASE_USER'),
+    #     'PASSWORD': env('DATABASE_PASSWORD'),
+    #     'HOST': env('DATABASE_HOST'),
+    #     'PORT': env('DATABASE_PORT'),
+    # },
+    # 'mysql': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': env('DATABASE_NAME'),
+    #     'USER': env('DATABASE_USER'),
+    #     'PASSWORD': env('DATABASE_PASSWORD'),
+    #     'HOST': env('DATABASE_HOST'),
+    #     'PORT': env('DATABASE_PORT')
+    # }
 }
 
 # Password validation
@@ -198,17 +198,13 @@ STATIC_URL = "static/"
 
 MEDIA_URL = "/media/"
 
-
-
-
-if env('CLOUD') == 1:
+if os.getenv('CLOUD', '1') == 1:
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 else:
-    STATIC_ROOT = env('STATIC_ROOT')
+    STATIC_ROOT = os.getenv('STATIC_ROOT', '')
 MEDIA_ROOT = BASE_DIR / "media"
 
-
-if not DEBUG:    # Tell Django to copy statics to the `staticfiles` directory
+if not DEBUG:  # Tell Django to copy statics to the `staticfiles` directory
     # in your application directory on Render.
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Turn on WhiteNoise storage backend that takes care of compressing static files

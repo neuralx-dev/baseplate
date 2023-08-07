@@ -5,4 +5,4 @@ from .models import Tool
 class ToolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tool
-        fields = ['name', 'about', 'desc', 'banner', 'logo', 'link', 'tags']
+        fields = ['id', 'name', 'about', 'desc', 'banner', 'logo', 'link', 'tags']
