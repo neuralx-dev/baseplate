@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'directory'
+    'directory',
+    'roboprompt'
 ]
 
 MIDDLEWARE = [
@@ -68,7 +69,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:5173', 'http://127.0.0.1:3000', 'https://toolbot.iran.liara.run'
+    'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:3000', 'https://toolbot.iran.liara.run',
+    'https://roboprompt.iran.liara.run', 'http://localhost*', 'http://127.0.0.1*'
 ]
 
 ROOT_URLCONF = "baseplate.urls"

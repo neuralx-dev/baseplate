@@ -16,7 +16,7 @@ from .serializers import ToolSerializer
 # Create your views here.
 from rest_framework import generics
 from .models import Tool
-from .serializers import ToolSerializer
+from .serializers import *
 
 
 @api_view(['GET'])
@@ -28,7 +28,7 @@ def tools_for_home(request):
     random.shuffle(tags)
 
     return Response({
-        'tools': ToolSerializer(Tool.objects.all().order_by('?')[:20], many=True).data,
+        'tools': ToolSerializerForList(Tool.objects.all().order_by('?')[:20], many=True).data,
         'tags': tags,
         'count': len(Tool.objects.all())
     }, status=status.HTTP_200_OK)
@@ -38,6 +38,12 @@ class ToolListCreateView(generics.ListCreateAPIView):
     # This view handles GET and POST requests for the Tool model
     queryset = Tool.objects.all()
     serializer_class = ToolSerializer
+
+
+class ToolListView(generics.ListCreateAPIView):
+    # This view handles GET and POST requests for the Tool model
+    queryset = Tool.objects.all()
+    serializer_class = ToolSerializerForList
 
 
 class ToolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -56,7 +62,7 @@ def search_tools(request):
         Q(name__contains=query) | Q(desc__contains=query) | Q(tags__contains=query) | Q(about__contains=query))
     print(len(tools))
     # serialize the tools
-    tool_serializer = ToolSerializer(tools, many=True)
+    tool_serializer = ToolSerializerForList(tools, many=True)
     # return a response with the serialized data and a status code of 200 (OK)
     return Response(tool_serializer.data, status=status.HTTP_200_OK)
 

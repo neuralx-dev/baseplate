@@ -10,12 +10,6 @@ class UserSerializerData(ModelSerializer):
 
 
 class UserSerializerProfile(ModelSerializer):
-    symbol_name = ReadOnlyField()
-    ranking = ReadOnlyField()
-    stats = ReadOnlyField()
-    points = ReadOnlyField()
-    level = ReadOnlyField()
-
     class Meta:
         model = User
-        fields = ['id', 'email', 'symbol_name', 'ranking', 'stats', 'points', 'level']
+        fields = ['id', 'email']
