@@ -10,6 +10,7 @@ from authentication.managers import UserAccountManager
 class User(AbstractUser):
     username = None
     email = models.EmailField(max_length=255, unique=True)
+    openai_api_key = models.CharField(max_length=255,default='')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserAccountManager()

@@ -52,8 +52,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'directory',
-    'roboprompt'
+    'toolbot',
+    'roboprompt',
+    'roboplus',
+    'robodoc'
 ]
 
 MIDDLEWARE = [

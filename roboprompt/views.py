@@ -127,3 +127,5 @@ def search_prompt(request):
     # Serialize the prompts and return a JSON response with the data
     serializer = PromptSerializerForList(prompts, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
